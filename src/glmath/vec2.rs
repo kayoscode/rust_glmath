@@ -150,7 +150,7 @@ impl<T: PartialOrd + Copy + DivAssign> DivAssign<T> for Vec2<T> {
 }
 
 impl<T: PartialOrd + Copy +
-    std::ops::Div<Output = T>> TwoDimVec<T> for Vec2<T> {
+    std::ops::Div<Output = T>> TwoDimSwizzle<T> for Vec2<T> {
     fn x(&self) -> &T {
         &self.x
     }

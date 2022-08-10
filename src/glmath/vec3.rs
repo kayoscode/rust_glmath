@@ -175,7 +175,7 @@ impl<T: PartialOrd + Copy + Mul<Output = T> + Sub<Output = T>> Rem<Vec3<T>> for 
     }
 }
 
-impl<T: PartialOrd + Copy> TwoDimVec<T> for Vec3<T> {
+impl<T: PartialOrd + Copy> TwoDimSwizzle<T> for Vec3<T> {
     fn x(&self) -> &T {
         &self.x
     }
@@ -193,7 +193,7 @@ impl<T: PartialOrd + Copy> TwoDimVec<T> for Vec3<T> {
     }
 }
 
-impl<T: PartialOrd + Copy> ThreeDimVec<T> for Vec3<T> {
+impl<T: PartialOrd + Copy> ThreeDimSwizzle<T> for Vec3<T> {
     fn z(&self) -> &T {
         &self.z
     }

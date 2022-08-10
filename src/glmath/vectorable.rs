@@ -1,6 +1,9 @@
 pub trait Vectorable<T> {
     fn sqrt(&self) -> T;
     fn acos(&self) -> T;
+
+    fn zero() -> T;
+    fn one() -> T;
 }
 
 impl Vectorable<f32> for f32 {
@@ -10,6 +13,14 @@ impl Vectorable<f32> for f32 {
 
     fn acos(&self) -> f32 {
         f32::acos(*self)
+    }
+
+    fn zero() -> f32 {
+        0.0
+    }
+
+    fn one() -> f32 {
+        1.0
     }
 }
 
@@ -21,6 +32,14 @@ impl Vectorable<f64> for f64 {
     fn acos(&self) -> f64 {
         f64::acos(*self)
     }
+
+    fn zero() -> f64 {
+        0.0
+    }
+
+    fn one() -> f64 {
+        1.0
+    }
 }
 
 impl Vectorable<i32> for i32 {
@@ -31,15 +50,13 @@ impl Vectorable<i32> for i32 {
     fn acos(&self) -> i32 {
         f64::acos(*self as f64) as i32
     }
-}
 
-impl Vectorable<u32> for u32 {
-    fn sqrt(&self) -> u32 {
-        f64::sqrt(*self as f64) as u32
+    fn zero() -> i32 {
+        0
     }
 
-    fn acos(&self) -> u32 {
-        f64::acos(*self as f64) as u32
+    fn one() -> i32 {
+        1
     }
 }
 
@@ -51,14 +68,12 @@ impl Vectorable<i64> for i64 {
     fn acos(&self) -> i64 {
         f64::acos(*self as f64) as i64
     }
-}
 
-impl Vectorable<u64> for u64 {
-    fn sqrt(&self) -> u64 {
-        f64::sqrt(*self as f64) as u64
+    fn zero() -> i64 {
+        0
     }
-
-    fn acos(&self) -> u64 {
-        f64::acos(*self as f64) as u64
+    
+    fn one() -> i64 {
+        1
     }
 }

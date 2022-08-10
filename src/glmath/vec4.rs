@@ -174,7 +174,7 @@ impl<T: PartialOrd + Copy +
     }
 }
 
-impl<T: PartialOrd + Copy> TwoDimVec<T> for Vec4<T> {
+impl<T: PartialOrd + Copy> TwoDimSwizzle<T> for Vec4<T> {
     fn x(&self) -> &T {
         &self.x
     }
@@ -192,7 +192,7 @@ impl<T: PartialOrd + Copy> TwoDimVec<T> for Vec4<T> {
     }
 }
 
-impl<T: PartialOrd + Copy> ThreeDimVec<T> for Vec4<T> {
+impl<T: PartialOrd + Copy> ThreeDimSwizzle<T> for Vec4<T> {
     fn z(&self) -> &T {
         &self.z
     }
@@ -222,7 +222,7 @@ impl<T: PartialOrd + Copy> ThreeDimVec<T> for Vec4<T> {
     }
 }
 
-impl<T: PartialOrd + Copy> FourDimVec<T> for Vec4<T> {
+impl<T: PartialOrd + Copy> FourDimSwizzle<T> for Vec4<T> {
     fn w(&self) -> &T {
         return &self.w;
     }
