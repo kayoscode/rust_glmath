@@ -4,7 +4,7 @@ use crate::glmath::*;
 
 #[derive(Debug, Copy, Clone, Default, PartialEq)]
 pub struct Mat33<T: PartialOrd + Copy> {
-    data: [[T; 3]; 3]
+    pub data: [[T; 3]; 3]
 }
 
 impl<T: Vectorable<T> + PartialOrd + Copy> Mat33<T> {

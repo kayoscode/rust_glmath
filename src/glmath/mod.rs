@@ -77,6 +77,18 @@ pub trait StandardQuat<T: PartialOrd + Copy + Vectorable<T>>
     where Self: DivAssign<T> + Div<T, Output = Self> + Sized + Copy,
     T: Mul<Output = T> + Div<Output = T> 
 {
+    fn from_euler_angles(euler: Vec3<T>) -> Quat<T>;
+    fn from_axis_angle(axis: Vec3<T>, angle: T) -> Quat<T>;
+    fn from_matrix(rot_mat: &Mat44<T>) -> Quat<T>;
+
+    fn invert(&mut self);
+    fn get_inverted(&self) -> Self {
+        let mut a = *self;
+        a.invert();
+        a.normalize();
+        a
+    }
+
     fn length(&self) -> T {
         self.length_sq().sqrt()
     }
@@ -91,15 +103,18 @@ pub trait StandardQuat<T: PartialOrd + Copy + Vectorable<T>>
         self.div(self.length())
     }
 
-    //fn set_to_axis_angle(axis: Vec3<T>, angle: T);
+    fn rotate(&mut self, axis: Vec3<T>, angle: T);
 
-    // TODO: once matrices are created.
-    //fn to_matrix(&mut self);
-    //fn get_to_matrix(&self) -> Self {
-        //let temp = *self;
-        //temp.to_matrix();
-        //temp
-    //}
+    fn to_euler(&self) -> Vec3<T>;
+    fn to_matrix(&self) -> Mat44<T>;
+
+    fn slerp(a: Quat<T>, b: Quat<T>, blend: T) -> Quat<T>;
+
+    fn forward(&self) -> Vec3<T>;
+    fn up(&self) -> Vec3<T>;
+    fn right(&self) -> Vec3<T>;
+
+    fn look_rotation(&mut self, f: Vec3<T>, u: Vec3<T>);
 }
 
 pub trait StandardVec<T: PartialEq + Vectorable<T>> 

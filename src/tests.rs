@@ -1,9 +1,15 @@
-
 #[cfg(test)] 
 mod tests {
-    use std::f32::consts::PI;
+    macro_rules! assert_delta {
+        ($x:expr, $y:expr, $d:expr) => {
+            if !($x - $y < $d || $y - $x < $d) { panic!(); }
+        }
+    }
 
-    use glmath::glmath::*;
+    const DELTA: f64 = 0.00001;
+
+    use std::{f32::consts::PI};
+    use glmath::glmath::{*, quat::Quat, vec3::Vec3};
 
     #[test]
     fn test_vec2() {
@@ -79,7 +85,46 @@ mod tests {
 
     #[test]
     fn test_quat() {
-        // Do nothing yet, most of the functionality isn't in.
+        assert_eq!(Quatf::IDENTITY, Quatf::new(0.0, 0.0, 0.0, 1.0));
+        assert_eq!(Quatf::ZERO, Quatf::new(0.0, 0.0, 0.0, 0.0));
+
+        // Test quaternion inversion.
+        let q = Quatf::new(1.0, 0.0, 0.0, 0.0);
+        assert_eq!(q, q.get_inverted());
+
+        let q = Quatf::new(10.0, 13.0, 2.0, 1.0);
+        assert_eq!(Quatf::new(0.60412204, -0.7853587, -0.12082442, -0.06041221), q.get_inverted());
+
+        // Test the conversions between types of rotations.
+        let q = Quat::<f64>::from_axis_angle(
+            Vec3::<f64>::new(1.0, 0.0, 0.0), 0.1);
+
+        assert_delta!(q.x, 0.4997916927067833, DELTA);
+        assert_delta!(q.y, 0.0, DELTA);
+        assert_delta!(q.z, 0.0, DELTA);
+        assert_delta!(q.w, 0.9987502603949663, DELTA);
+
+        // Is the matrix representation correct?
+        let as_mat = q.to_matrix();
+        let q2 = Quat::<f64>::from_matrix(&as_mat);
+        assert_delta!(q.x, q2.x, DELTA);
+        assert_delta!(q.y, q2.y, DELTA);
+        assert_delta!(q.z, q2.z, DELTA);
+        assert_delta!(q.w, q2.w, DELTA);
+
+        // Check euler angles.
+        let euler = q.to_euler();
+        assert_delta!(euler.x, 0.1, DELTA);
+        assert_delta!(euler.y, 0.0, DELTA);
+        assert_delta!(euler.z, 0.0, DELTA);
+
+        // Make sure the conversion back from euler angles 
+        // is the correct quat.
+        let q2 = Quat::<f64>::from_euler_angles(euler);
+        assert_delta!(q.x, q2.x, DELTA);
+        assert_delta!(q.y, q2.y, DELTA);
+        assert_delta!(q.z, q2.z, DELTA);
+        assert_delta!(q.w, q2.w, DELTA);
     }
 
     #[test]
