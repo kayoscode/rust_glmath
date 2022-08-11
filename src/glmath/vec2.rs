@@ -1,7 +1,7 @@
 use std::{ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Neg}, fmt::Display};
 use crate::glmath::*;
 
-#[derive(Debug, Clone, Copy, Default)]
+#[derive(Debug, Clone, Copy, Default, PartialEq)]
 pub struct Vec2<T: PartialOrd + Copy> {
     pub x: T,
     pub y: T
@@ -27,31 +27,25 @@ impl
     }
 }
 
-impl<T: PartialOrd + Copy> Vec2<T> {
+impl<T: PartialOrd + Copy + Vectorable<T>> Vec2<T> {
     pub fn new(x: T, y: T) -> Vec2<T> {
         Vec2::<T> { x, y }
     }
-}
 
-impl<T: PartialOrd + Copy + Vectorable<T>> PartialEq for Vec2<T> 
-    where Vec2<T>: StandardVec<T>,
-    T: Mul<Output = T> + Div<Output = T>
-{
-    fn eq(&self, other: &Self) -> bool {
-        self.length() == other.length()
-    }
-}
+    pub const ZERO: Vec2<T> = Vec2::<T> {
+        x: T::ZERO,
+        y: T::ZERO
+    };
 
-impl<T: PartialOrd + Copy + Vectorable<T>> PartialOrd for Vec2<T> 
-    where Vec2<T>: StandardVec<T>,
-    T: Mul<Output = T> + Div<Output = T>
-{
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        let len = Vec2::<T>::length(&self);
-        let other_len = Vec2::<T>::length(&other);
+    pub const X: Vec2<T> = Vec2::<T> {
+        x: T::ONE,
+        y: T::ZERO
+    };
 
-        len.partial_cmp(&other_len)
-    }
+    pub const Y: Vec2<T> = Vec2::<T> {
+        x: T::ZERO,
+        y: T::ONE
+    };
 }
 
 impl<T: PartialOrd + Copy + std::ops::Neg<Output = T>> Neg for Vec2<T> {
@@ -62,7 +56,7 @@ impl<T: PartialOrd + Copy + std::ops::Neg<Output = T>> Neg for Vec2<T> {
     }
 }
 
-impl<T: PartialOrd + Copy + std::ops::Add<Output = T>> Add<Vec2<T>> for Vec2<T> {
+impl<T: Vectorable<T> + PartialOrd + Copy + std::ops::Add<Output = T>> Add<Vec2<T>> for Vec2<T> {
     type Output = Vec2<T>;
 
     fn add(self, rhs: Vec2<T>) -> Vec2<T> {
@@ -80,7 +74,7 @@ impl<T: PartialOrd + Copy + std::ops::AddAssign<T>> AddAssign<Vec2<T>> for Vec2<
     }
 }
 
-impl<T: PartialOrd + Copy + std::ops::Sub<Output = T>> Sub<Vec2<T>> for Vec2<T> {
+impl<T: Vectorable<T> + PartialOrd + Copy + std::ops::Sub<Output = T>> Sub<Vec2<T>> for Vec2<T> {
     type Output = Vec2<T>;
 
     fn sub(self, rhs: Vec2<T>) -> Vec2<T> {

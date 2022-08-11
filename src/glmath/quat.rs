@@ -61,41 +61,22 @@ impl<T: PartialOrd + Copy + Vectorable<T>> Quat<T> {
         }
     }
 
-    pub fn identity() -> Quat<T> {
-        Quat::<T> { 
-            x: T::zero(),
-            y: T::zero(),
-            z: T::zero(),
-            w: T::one()
-        }
-    }
+    pub const ZERO: Quat<T> = Quat::<T> {
+        x: T::ZERO,
+        y: T::ZERO,
+        z: T::ZERO,
+        w: T::ZERO
+    };
+
+    pub const IDENTITY: Quat<T> = Quat::<T> {
+        x: T::ZERO,
+        y: T::ZERO,
+        z: T::ZERO,
+        w: T::ONE
+    };
 
     pub fn set_identity(&mut self) {
-        self.x = T::zero();
-        self.y = T::zero();
-        self.z = T::zero();
-        self.w = T::one();
-    }
-}
-
-impl<T: PartialOrd + Copy + Vectorable<T>> PartialEq for Quat<T> 
-    where Quat<T>: StandardQuat<T>,
-    T: Mul<Output = T> + Div<Output = T>
-{
-    fn eq(&self, other: &Self) -> bool {
-        self.length() == other.length()
-    }
-}
-
-impl<T: PartialOrd + Copy + Vectorable<T>> PartialOrd for Quat<T>
-    where Quat<T>: StandardQuat<T>,
-    T: Mul<Output = T> + Div<Output = T>
-{
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        let len = self.length();
-        let other_len = other.length();
-
-        len.partial_cmp(&other_len)
+        *self = Self::IDENTITY;
     }
 }
 
@@ -230,7 +211,7 @@ impl<T: PartialOrd + Copy + Mul<Output = T> +
 }
 
 // Transform Vec3.
-impl<T: PartialOrd + Copy + Mul<Output = T>> Mul<Vec3<T>> for Quat<T> {
+impl<T: Vectorable<T> + PartialOrd + Copy + Mul<Output = T>> Mul<Vec3<T>> for Quat<T> {
     type Output = Vec3<T>;
 
     // TODO: transform into a matrix and perform math.
@@ -240,7 +221,7 @@ impl<T: PartialOrd + Copy + Mul<Output = T>> Mul<Vec3<T>> for Quat<T> {
 }
 
 // Transform Vec4.
-impl<T: PartialOrd + Copy + Mul<Output = T>> Mul<Vec4<T>> for Quat<T> {
+impl<T: Vectorable<T> + PartialOrd + Copy + Mul<Output = T>> Mul<Vec4<T>> for Quat<T> {
     type Output = Vec4<T>;
 
     // TODO: transform into a matrix and perform math.

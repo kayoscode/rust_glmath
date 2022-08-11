@@ -2,7 +2,7 @@ use std::{ops::{Add, AddAssign, Neg, Sub, SubAssign, Mul, MulAssign, Rem}, fmt::
 
 use crate::glmath::*;
 
-#[derive(Debug, Copy, Clone, Default)]
+#[derive(Debug, Copy, Clone, Default, PartialEq)]
 pub struct Vec3<T: PartialOrd + Copy> {
     pub x: T,
     pub y: T,
@@ -29,31 +29,34 @@ impl
     }
 }
 
-impl<T: PartialOrd + Copy> Vec3<T> {
+impl<T: Vectorable<T> + PartialOrd + Copy> Vec3<T> {
     pub fn new(x: T, y: T, z: T) -> Vec3<T> {
         Vec3::<T> { x, y, z }
     }
-}
 
-impl<T: PartialOrd + Copy + Vectorable<T>> PartialEq for Vec3<T> 
-    where Vec3<T>: StandardVec<T>,
-    T: Mul<Output = T> + Div<Output = T>
-{
-    fn eq(&self, other: &Self) -> bool {
-        self.length() == other.length()
-    }
-}
+    pub const ZERO: Vec3<T> = Vec3::<T> {
+        x: T::ZERO,
+        y: T::ZERO,
+        z: T::ZERO
+    };
 
-impl<T: PartialOrd + Copy + Vectorable<T>> PartialOrd for Vec3<T>
-    where Vec3<T>: StandardVec<T>,
-    T: Mul<Output = T> + Div<Output = T>
-{
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        let len = self.length();
-        let other_len = other.length();
+    pub const X: Vec3<T> = Vec3::<T> {
+        x: T::ONE,
+        y: T::ZERO,
+        z: T::ZERO
+    };
 
-        len.partial_cmp(&other_len)
-    }
+    pub const Y: Vec3<T> = Vec3::<T> {
+        x: T::ZERO,
+        y: T::ONE,
+        z: T::ZERO
+    };
+
+    pub const Z: Vec3<T> = Vec3::<T> {
+        x: T::ZERO,
+        y: T::ZERO,
+        z: T::ONE
+    };
 }
 
 impl<T: PartialOrd + Copy + std::ops::Neg<Output = T>> Neg for Vec3<T> {
@@ -185,11 +188,17 @@ impl<T: PartialOrd + Copy> TwoDimSwizzle<T> for Vec3<T> {
     }
 
     fn xy(&self) -> Vec2<T> {
-        Vec2::<T>::new(self.x, self.y)
+        Vec2::<T> { 
+            x: self.x,
+            y: self.y
+        }
     }
 
     fn yx(&self) -> Vec2<T> {
-        Vec2::<T>::new(self.y, self.x)
+        Vec2::<T> {
+            x: self.y,
+            y: self.x
+        }
     }
 }
 

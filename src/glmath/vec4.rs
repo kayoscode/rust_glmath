@@ -1,7 +1,7 @@
 use std::{ops::{Add, MulAssign, AddAssign, SubAssign, Sub, Neg}, fmt::Display};
 use crate::glmath::*;
 
-#[derive(Debug, Copy, Clone, Default)]
+#[derive(Debug, Copy, Clone, Default, PartialEq)]
 pub struct Vec4<T: PartialOrd + Copy> {
     pub x: T,
     pub y: T,
@@ -29,31 +29,45 @@ impl<T: PartialOrd + Copy + Display> Display for Vec4<T> {
     }
 }
 
-impl<T: PartialOrd + Copy> Vec4<T> {
+impl<T: Vectorable<T> + PartialOrd + Copy> Vec4<T> {
     pub fn new(x: T, y: T, z: T, w: T) -> Vec4<T> {
         Vec4::<T> { x, y, z, w }
     }
-}
 
-impl<T: PartialOrd + Copy + Vectorable<T>> PartialEq for Vec4<T> 
-    where Vec4<T>: StandardVec<T>,
-    T: Mul<Output = T> + Div<Output = T>
-{
-    fn eq(&self, other: &Self) -> bool {
-        self.length() == other.length()
-    }
-}
+    pub const ZERO: Vec4<T> = Vec4::<T> {
+        x: T::ZERO,
+        y: T::ZERO,
+        z: T::ZERO,
+        w: T::ZERO
+    };
 
-impl<T: PartialOrd + Copy + Vectorable<T>> PartialOrd for Vec4<T>
-    where Vec4<T>: StandardVec<T>,
-    T: Mul<Output = T> + Div<Output = T>
-{
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        let len = self.length();
-        let other_len = other.length();
+    pub const X: Vec4<T> = Vec4::<T> {
+        x: T::ONE,
+        y: T::ZERO,
+        z: T::ZERO,
+        w: T::ZERO
+    };
 
-        len.partial_cmp(&other_len)
-    }
+    pub const Y: Vec4<T> = Vec4::<T> {
+        x: T::ZERO,
+        y: T::ONE,
+        z: T::ZERO,
+        w: T::ZERO
+    };
+
+    pub const Z: Vec4<T> = Vec4::<T> {
+        x: T::ZERO,
+        y: T::ZERO,
+        z: T::ONE,
+        w: T::ZERO
+    };
+
+    pub const W: Vec4<T> = Vec4::<T> {
+        x: T::ZERO,
+        y: T::ZERO,
+        z: T::ZERO,
+        w: T::ONE
+    };
 }
 
 impl<T: PartialOrd + Copy + Neg<Output = T>> Neg for Vec4<T> {
@@ -174,7 +188,7 @@ impl<T: PartialOrd + Copy +
     }
 }
 
-impl<T: PartialOrd + Copy> TwoDimSwizzle<T> for Vec4<T> {
+impl<T: Vectorable<T> + PartialOrd + Copy> TwoDimSwizzle<T> for Vec4<T> {
     fn x(&self) -> &T {
         &self.x
     }
@@ -192,7 +206,7 @@ impl<T: PartialOrd + Copy> TwoDimSwizzle<T> for Vec4<T> {
     }
 }
 
-impl<T: PartialOrd + Copy> ThreeDimSwizzle<T> for Vec4<T> {
+impl<T: Vectorable<T> + PartialOrd + Copy> ThreeDimSwizzle<T> for Vec4<T> {
     fn z(&self) -> &T {
         &self.z
     }
@@ -222,7 +236,7 @@ impl<T: PartialOrd + Copy> ThreeDimSwizzle<T> for Vec4<T> {
     }
 }
 
-impl<T: PartialOrd + Copy> FourDimSwizzle<T> for Vec4<T> {
+impl<T: Vectorable<T> + PartialOrd + Copy> FourDimSwizzle<T> for Vec4<T> {
     fn w(&self) -> &T {
         return &self.w;
     }

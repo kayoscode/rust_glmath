@@ -3,18 +3,75 @@ pub mod vec2;
 pub mod vec3;
 pub mod vec4;
 pub mod quat;
+pub mod mat22;
+pub mod mat33;
+pub mod mat44;
 
 use std::ops::{Mul, Div, DivAssign};
 use vec2::Vec2;
 use vec3::Vec3;
 use vec4::Vec4;
 use quat::Quat;
+use mat22::Mat22;
+use mat33::Mat33;
+use mat44::Mat44;
 use self::vectorable::Vectorable;
 
 pub type Vec2f = Vec2<f32>;
 pub type Vec3f = Vec3<f32>;
 pub type Vec4f = Vec4<f32>;
 pub type Quatf = Quat<f32>;
+pub type Mat22f = Mat22<f32>;
+pub type Mat33f = Mat33<f32>;
+pub type Mat44f = Mat44<f32>;
+
+pub trait StandardMat<T: PartialOrd + Copy + Vectorable<T>> 
+    where Self: Sized + Copy
+{
+    fn transpose(&mut self);
+
+    fn get_transposed(&self) -> Self {
+        let mut mat = *self;
+        mat.transpose();
+        mat
+    }
+
+    fn invert(&mut self);
+    fn get_inverted(&self) -> Self {
+        let mut mat = *self;
+        mat.invert();
+        mat
+    }
+
+    fn det(&self) -> T;
+}
+
+/// The standard operations for a Mat44.
+/// A matrix can be scaled, rotated, and translated.
+pub trait StandardMat44<T: PartialOrd + Copy + Vectorable<T>> 
+    where Self: Sized + Copy
+{
+    fn scale(&mut self, scale: Vec3<T>);
+    fn get_scaled(&self, scale: Vec3<T>) -> Self {
+        let mut mat = *self;
+        mat.scale(scale);
+        mat
+    }
+
+    fn translate(&mut self, pos: Vec3<T>);
+    fn get_translated(&self, pos: Vec3<T>) -> Self {
+        let mut mat = *self;
+        mat.translate(pos);
+        mat
+    }
+
+    fn rotate(&mut self, axis: Vec3<T>, angle: T);
+    fn get_rotated(&self, axis: Vec3<T>, angle: T) -> Self {
+        let mut mat = *self;
+        mat.rotate(axis, angle);
+        mat
+    }
+}
 
 pub trait StandardQuat<T: PartialOrd + Copy + Vectorable<T>>
     where Self: DivAssign<T> + Div<T, Output = Self> + Sized + Copy,
@@ -45,7 +102,7 @@ pub trait StandardQuat<T: PartialOrd + Copy + Vectorable<T>>
     //}
 }
 
-pub trait StandardVec<T: Vectorable<T>> 
+pub trait StandardVec<T: PartialEq + Vectorable<T>> 
     where Self: Mul<Output = T> + DivAssign<T> + Div<T, Output = Self> + Sized + Copy,
     T: Mul<Output = T> + Div<Output = T>
 {
@@ -56,11 +113,21 @@ pub trait StandardVec<T: Vectorable<T>>
     fn length_sq(&self) -> T;
 
     fn normalize(&mut self) {
-        self.div_assign(self.length());
+        let len = self.length();
+
+        if len != T::ZERO {
+            self.div_assign(len);
+        }
     }
 
     fn get_normalized(&self) -> Self {
-        self.div(self.length())
+        let len = self.length();
+
+        if len != T::ZERO {
+            return self.div(self.length())
+        }
+
+        *self
     }
 
     fn angle_between(&self, other: &Self) -> T {
